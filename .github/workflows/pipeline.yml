@@ -5,10 +5,14 @@ on:
     branches:
       - main
       - feature/**
+    
+  pull_request:
+    branches:
+      - main
 
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,3 +29,6 @@ jobs:
 
       - name: Compile typescript
         run: npx tsc --noEmit
+
+      - name: Test 
+        run: npm test
