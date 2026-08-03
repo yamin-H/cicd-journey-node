@@ -4,12 +4,12 @@ export const app = express();
 app.use(express.json());
 
 export function add(a: number, b: number): number {
-    return a + b;
+  return a + b;
 }
 
-export function subtract(a: number, b: number): number {
-    return a - b;
-};
+export function subtract(a: string, b: number): number {
+  return a - b;
+}
 
 app.get("/add", (req: Request, res: Response) => {
     const { a, b } = req.query;
