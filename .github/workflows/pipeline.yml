@@ -1,0 +1,27 @@
+name: Pipeline workflow
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Copy the repo into VM
+        uses: actions/checkout@v4
+
+      - name: Install Node into VM
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile typescript
+        run: npx tsc --noEmit
