@@ -21,6 +21,15 @@ app.get("/subtract", (req: Request, res: Response) => {
     res.json({ result: subtract(Number(a), Number(b)) });
 });
 
+export function multiply(a: number, b: number): number {
+  return a * b;
+}
+
+app.get("/multiply", (req: Request, res: Response) => {
+  const { a, b } = req.query;
+  res.json({ result: multiply(Number(a), Number(b)) });
+});
+
 app.listen(3000, () => {
     console.log("Server running on port 3000");
 });
