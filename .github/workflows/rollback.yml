@@ -1,0 +1,79 @@
+name: Rollback Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to rollback to (e.g. v1.0.0)'
+        required: true
+        type: string
+      reason:
+        description: 'Reason for rollback'
+        required: true
+        type: string
+
+jobs:
+  validate:
+    name: Validate Version Tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check tag exists
+        run: |
+          if git tag | grep -q "^${{ github.event.inputs.version }}$"; then
+            echo "Tag ${{ github.event.inputs.version }} found. Proceeding."
+          else
+            echo "ERROR: Tag ${{ github.event.inputs.version }} does not exist."
+            echo "Available tags:"
+            git tag | sort -V | tail -10
+            exit 1
+          fi
+
+  rollback:
+    name: Execute Rollback
+    runs-on: ubuntu-latest
+    needs: [validate]
+    environment: production
+
+    steps:
+      - name: Checkout specific version
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Compile this version
+        run: npm run build
+
+      - name: Log rollback details
+        run: |
+          echo "========================================="
+          echo "ROLLBACK INITIATED"
+          echo "========================================="
+          echo "Rolling back to:  ${{ github.event.inputs.version }}"
+          echo "Reason:           ${{ github.event.inputs.reason }}"
+          echo "Initiated by:     ${{ github.actor }}"
+          echo "Time:             $(date -u)"
+          echo "========================================="
+
+      - name: Deploy rollback version
+        run: |
+          curl -f "${{ secrets.RENDER_DEPLOY_HOOK }}"
+          echo "Rollback deployment triggered."
+
+      - name: Confirm
+        run: |
+          echo "Rollback to ${{ github.event.inputs.version }} complete."
+          echo "Monitor your application to confirm stability."

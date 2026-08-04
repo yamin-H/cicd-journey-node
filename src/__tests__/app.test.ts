@@ -62,5 +62,11 @@ describe("API endpoints", () => {
         expect(response.status).toBe(200);
         expect(response.body.message).toBe("pong");
     });
+    test("GET /health includes uptime", async () => {
+        const response = await request(app).get("/health");
+        expect(response.status).toBe(200);
+        expect(response.body.status).toBe("healthy");
+        expect(typeof response.body.uptime).toBe("number");
+    });
 });
 

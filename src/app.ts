@@ -44,3 +44,11 @@ app.get("/ping", (req: Request, res: Response) => {
         timestamp: new Date().toISOString(),
     });
 });
+
+app.get("/health", (req: Request, res: Response) => {
+    res.json({
+        status: "healthy",
+        version: "1.0.1",
+        uptime: process.uptime(),
+    });
+});

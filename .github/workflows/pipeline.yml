@@ -72,23 +72,52 @@ jobs:
         run: |
           echo "Checking compiled output..."
           ls dist/
-          echo "Build verified."
+          echo "Build verified." 
 
-  deploy:
+  deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: [build]
     if: github.ref == 'refs/heads/main'
+    environment: production
 
     steps:
-      - name: Trigger deployment
-        run: |
-          echo "Triggering deployment to Render..."
-          curl -f "${{ secrets.RENDER_DEPLOY_HOOK }}"
-          echo "Deployment triggered."
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Confirm
+      - name: Generate version tag
+        id: version
         run: |
-          echo "Deployment pipeline complete."
-          echo "Commit: ${{ github.sha }}"
-          echo "Triggered by: ${{ github.actor }}"
+          DATE=$(date -u +%Y%m%d)
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          VERSION="v-${DATE}-${SHORT_SHA}"
+          echo "tag=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Generated version: ${VERSION}"
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying ${{ steps.version.outputs.tag }} to PRODUCTION..."
+          curl -f "${{ secrets.RENDER_DEPLOY_HOOK }}"
+          echo "Production deployment triggered."
+
+      - name: Create and push release tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.version.outputs.tag }}" \
+            -m "Production release ${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
+          echo "Tagged release: ${{ steps.version.outputs.tag }}"
+
+      - name: Deployment summary
+        run: |
+          echo "========================================="
+          echo "PRODUCTION DEPLOYMENT COMPLETE"
+          echo "========================================="
+          echo "Version:     ${{ steps.version.outputs.tag }}"
+          echo "Commit:      ${{ github.sha }}"
+          echo "Deployed by: ${{ github.actor }}"
+          echo "Time:        $(date -u)"
+          echo "========================================="
