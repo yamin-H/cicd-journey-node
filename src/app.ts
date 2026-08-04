@@ -44,3 +44,22 @@ app.get("/ping", (req: Request, res: Response) => {
         timestamp: new Date().toISOString(),
     });
 });
+
+export function divide(a: number, b: number): number | null {
+  if (b === 0) {
+    return null;
+  }
+  return a / b;
+}
+
+app.get("/divide", (req: Request, res: Response) => {
+    const { a, b } = req.query;
+    const result = divide(Number(a), Number(b));
+
+    if (result === null) {
+        res.status(400).json({ error: "division by zero" });
+        return;
+    }
+
+    res.json({ operation: "divide", a: Number(a), b: Number(b), result });
+});

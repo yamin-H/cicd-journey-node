@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../app";
 import { add, subtract, multiply } from "../app";
+import { divide } from "../app";
 
 describe("Math functions", () => {
     test("add returns correct sum", () => {
@@ -61,6 +62,30 @@ describe("API endpoints", () => {
         const response = await request(app).get("/ping");
         expect(response.status).toBe(200);
         expect(response.body.message).toBe("pong");
+    });
+});
+
+describe("Divide function", () => {
+    test("divide basic", () => {
+        expect(divide(10, 2)).toBe(5);
+    });
+
+    test("divide by zero returns null", () => {
+        expect(divide(10, 0)).toBeNull();
+    });
+});
+
+describe("Divide endpoint", () => {
+    test("GET /divide returns correct result", async () => {
+        const response = await request(app).get("/divide?a=10&b=2");
+        expect(response.status).toBe(200);
+        expect(response.body.result).toBe(5);
+    });
+
+    test("GET /divide by zero returns 400", async () => {
+        const response = await request(app).get("/divide?a=10&b=0");
+        expect(response.status).toBe(400);
+        expect(response.body.error).toBe("division by zero");
     });
 });
 
