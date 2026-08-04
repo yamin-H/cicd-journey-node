@@ -7,7 +7,8 @@
     "dev": "tsx src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "lint": "eslint src/**/*.ts"
   },
   "jest": {
     "preset": "ts-jest",
@@ -25,6 +26,9 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^26.1.2",
     "@types/supertest": "^7.2.1",
+    "@typescript-eslint/eslint-plugin": "^8.66.0",
+    "@typescript-eslint/parser": "^8.66.0",
+    "eslint": "^10.8.0",
     "jest": "^30.4.2",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.12",

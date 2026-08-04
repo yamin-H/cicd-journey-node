@@ -1,25 +1,25 @@
-name: Pipeline workflow
+name: Node CICD pipeline
 
 on:
   push:
     branches:
       - main
       - feature/**
-    
+  
   pull_request:
     branches:
       - main
 
-
 jobs:
-  build-and-test:
+  lint:
+    name: Code quality check
     runs-on: ubuntu-latest
 
     steps:
-      - name: Copy the repo into VM
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install Node into VM
+      - name: Setup nodejs
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -27,8 +27,62 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Compile typescript
-        run: npx tsc --noEmit
+      - name: Run linter
+        run: npm run lint
 
-      - name: Test 
-        run: npm test
+  test:
+    name: Run test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Stepup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm run test
+
+  build:
+    name: Compile typescript
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run compilation
+        run: npx tsc
+
+  deployment-check:
+    name: Deploy Check
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Simulate deployment
+        run: |
+          echo "All checks passed."
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "This is where real deployment would happen."
+          echo "Deployment simulation complete."
