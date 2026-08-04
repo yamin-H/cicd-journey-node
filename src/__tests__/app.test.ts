@@ -56,5 +56,11 @@ describe("API endpoints", () => {
         expect(response.status).toBe(200);
         expect(response.body.status).toBe("healthy");
     });
+
+    test("GET /ping returns pong", async () => {
+        const response = await request(app).get("/ping");
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe("pong");
+    });
 });
 

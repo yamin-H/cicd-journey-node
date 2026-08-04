@@ -37,3 +37,10 @@ app.get("/health", (req: Request, res: Response) => {
         version: "1.0.0",
     });
 });
+
+app.get("/ping", (req: Request, res: Response) => {
+    res.json({
+        message: "pong",
+        timestamp: new Date().toISOString(),
+    });
+});
