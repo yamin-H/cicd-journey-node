@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx src/app.ts",
-    "build": "tsc",
-    "start": "node dist/app.js",
-    "test": "jest --verbose",
-    "lint": "eslint src/**/*.ts"
+  "start": "node dist/server.js",
+  "build": "tsc",
+  "test": "jest --verbose",
+  "lint": "eslint src/**/*.ts"
   },
   "jest": {
     "preset": "ts-jest",
