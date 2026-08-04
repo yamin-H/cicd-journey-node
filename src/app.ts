@@ -17,16 +17,23 @@ export function multiply(a: number, b: number): number {
 }
 
 app.get("/add", (req: Request, res: Response) => {
-  const { a, b } = req.query;
-  res.json({ result: add(Number(a), Number(b)) });
+    const { a, b } = req.query;
+    res.json({ result: add(Number(a), Number(b)) });
 });
 
 app.get("/subtract", (req: Request, res: Response) => {
-  const { a, b } = req.query;
-  res.json({ result: subtract(Number(a), Number(b)) });
+    const { a, b } = req.query;
+    res.json({ result: subtract(Number(a), Number(b)) });
 });
 
 app.get("/multiply", (req: Request, res: Response) => {
-  const { a, b } = req.query;
-  res.json({ result: multiply(Number(a), Number(b)) });
+    const { a, b } = req.query;
+    res.json({ result: multiply(Number(a), Number(b)) });
+});
+
+app.get("/health", (req: Request, res: Response) => {
+    res.json({
+        status: "healthy",
+        version: "1.0.0",
+    });
 });
